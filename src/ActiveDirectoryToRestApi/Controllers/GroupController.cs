@@ -2,6 +2,7 @@ namespace ActiveDirectoryToRestApi.Controllers;
 
 [ApiController]
 [Route("[controller]")]
+[ServiceFilter(typeof(ApiKeyAuthFilter))]
 public class GroupController : ControllerBase
 {
     private readonly ILogger<GroupController> _logger;

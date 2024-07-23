@@ -2,7 +2,31 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(s =>
+{
+    s.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Description = "Enter the token with the `Bearer` prefix, e.g. \"Bearer a1b2c3d4\"",
+        Type = SecuritySchemeType.ApiKey,
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Scheme = "ApiKeyScheme",
+    });
+    var scheme = new OpenApiSecurityScheme
+    {
+        Reference = new OpenApiReference
+        {
+            Type = ReferenceType.SecurityScheme,
+            Id = "Bearer"
+        },
+        In = ParameterLocation.Header
+    };
+    var requirement = new OpenApiSecurityRequirement
+    {
+        { scheme, new List<string>() }
+    };
+    s.AddSecurityRequirement(requirement);
+});
 builder.Services.AddSingleton(provider =>
 {
     var configs = builder.Configuration.GetSection(nameof(LdapConfigs)).Get<LdapConfigs>();
@@ -18,6 +42,7 @@ builder.Services.AddSingleton(provider =>
 });
 builder.Services.AddSingleton<LdapService>();
 builder.Services.AddTransient<AuthUserService>();
+builder.Services.AddScoped<ApiKeyAuthFilter>();
 
 var app = builder.Build();
 
