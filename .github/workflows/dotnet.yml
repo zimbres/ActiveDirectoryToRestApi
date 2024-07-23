@@ -69,7 +69,7 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: |
-            zimbres/activedirectory-to-restapi
+            zimbres/${{ secrets.DOCKERHUB_IMAGE }}
           flavor: |
             latest=true
           tags: |
