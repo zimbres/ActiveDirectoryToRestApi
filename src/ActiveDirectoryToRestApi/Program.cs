@@ -30,12 +30,17 @@ builder.Services.AddSwaggerGen(s =>
 builder.Services.AddSingleton(provider =>
 {
     var configs = builder.Configuration.GetSection(nameof(LdapConfigs)).Get<LdapConfigs>();
-    var endpoint = new LdapDirectoryIdentifier(configs.Server, false, false);
+    var endpoint = new LdapDirectoryIdentifier(configs.Server, configs.Port, configs.UseSSL ? true : false, false);
     var ldapConnection = new LdapConnection(endpoint,
     new NetworkCredential($"{configs.User}@{configs.DomainName}", configs.Pass))
     {
         AuthType = AuthType.Basic
     };
+    if (configs.UseSSL)
+    {
+        ldapConnection.SessionOptions.SecureSocketLayer = true;
+        ldapConnection.SessionOptions.VerifyServerCertificate = (con, cert) => true;
+    }
     ldapConnection.SessionOptions.ReferralChasing = ReferralChasingOptions.None;
     ldapConnection.Bind();
     return ldapConnection;
