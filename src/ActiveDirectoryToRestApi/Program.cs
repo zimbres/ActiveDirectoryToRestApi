@@ -1,3 +1,5 @@
+using System.Runtime.InteropServices;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
@@ -36,10 +38,14 @@ builder.Services.AddSingleton(provider =>
     {
         AuthType = AuthType.Basic
     };
-    if (configs.UseSSL)
+    if (configs.UseSSL && RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
     {
         ldapConnection.SessionOptions.SecureSocketLayer = true;
         ldapConnection.SessionOptions.VerifyServerCertificate = (con, cert) => true;
+    }
+    if (configs.UseSSL && RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+    {
+        ldapConnection.SessionOptions.SecureSocketLayer = true;
     }
     ldapConnection.SessionOptions.ReferralChasing = ReferralChasingOptions.None;
     ldapConnection.Bind();
