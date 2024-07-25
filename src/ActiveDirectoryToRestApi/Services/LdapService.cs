@@ -2,15 +2,18 @@
 
 public class LdapService
 {
+    private readonly ILogger<LdapService> _logger;
     private readonly LdapConfigs _ldapConfigs;
     private readonly LdapConnection _connection;
     private readonly IConfiguration _configuration;
 
-    public LdapService(LdapConnection connection, IConfiguration configuration)
+    public LdapService(ILogger<LdapService> logger, LdapConnection connection, IConfiguration configuration)
     {
+        _logger = logger;
         _connection = connection;
         _configuration = configuration;
         _ldapConfigs = _configuration.GetSection(nameof(LdapConfigs)).Get<LdapConfigs>();
+        _logger = logger;
     }
     public User GetUserByUserName(string username)
     {
@@ -172,6 +175,20 @@ public class LdapService
         else
         {
             return 42;
+        }
+    }
+
+    public bool CheckLdapConnection()
+    {
+        try
+        {
+            _connection.Bind();
+            return true;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError("LDAP connection failed: {ex.StackTrace}", ex.StackTrace);
+            return false;
         }
     }
 }
