@@ -17,7 +17,7 @@ public class UserController : ControllerBase
     }
 
     [HttpPost("/email")]
-    public ActionResult<User> Email(string email = "test.user@zimbres.com")
+    public ActionResult<User> Email(string email = "test.user@zimbres.loc")
     {
         var user = _ldapService.GetUserByEmail(email);
         if (user == null)

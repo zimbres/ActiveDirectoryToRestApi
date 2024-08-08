@@ -30,7 +30,7 @@ public class LdapService
     private User GetUser(string filter)
     {
         string[] attributesToReturn = { "givenName", "sn", "mail", "userPrincipalName", "displayName", "sAMAccountName",
-                                        "userAccountControl", "accountExpires", "memberOf", "distinguishedName", "pwdLastSet" };
+                                        "userAccountControl", "accountExpires", "memberOf", "distinguishedName", "pwdLastSet", "lockoutTime" };
 
         SearchRequest searchRequest = new(_ldapConfigs.DistinguishedName, filter, SearchScope.Subtree, attributesToReturn);
 
@@ -39,6 +39,15 @@ public class LdapService
         if (searchResponse.Entries.Count > 0)
         {
             SearchResultEntry entry = searchResponse.Entries[0];
+
+            bool isLocked = false;
+            string lockoutTime = string.Empty;
+            if (entry.Attributes.Contains("lockoutTime"))
+            {
+                var lockoutTimeTicks = entry.Attributes["lockoutTime"][0].ToString();
+                isLocked = lockoutTimeTicks != "0";
+                lockoutTime = lockoutTimeTicks.ConvertToDateTime();
+            }
 
             string userAccountControl = entry.Attributes["userAccountControl"][0].ToString();
             string accountExpires = entry.Attributes["accountExpires"][0].ToString();
@@ -82,6 +91,8 @@ public class LdapService
                 PasswordExpiration = passwordExpiration,
                 Expiration = expiration,
                 Expired = expired,
+                IsLocked = isLocked,
+                LockoutTime = lockoutTime,
                 DistinguishedName = distinguishedName,
                 Groups = groups
             };

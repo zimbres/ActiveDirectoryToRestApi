@@ -9,7 +9,7 @@
     <UserSecretsId>d52504e9-ea6e-4152-a52e-467ca002e47c</UserSecretsId>
     <AssemblyVersion>$(PackageVersion)</AssemblyVersion>
     <FileVersion>$(PackageVersion)</FileVersion>
-    <Version>1.0.0.4</Version>
+    <Version>1.0.0.5</Version>
   </PropertyGroup>
 
   <ItemGroup>

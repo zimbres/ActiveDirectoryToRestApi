@@ -15,6 +15,8 @@ public class User
     public string PasswordExpiration { get; set; }
     public bool Expired { get; set; }
     public string Expiration { get; set; }
+    public bool IsLocked { get; set; }
+    public string LockoutTime { get; set; }
     public string DistinguishedName { get; set; }
     public List<string> Groups { get; set; }
 }
